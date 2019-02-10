@@ -15,10 +15,21 @@ connection.connect(function (err) {
     console.log("Connected to mySQL with id: " + connection.threadId);
 })
 
+function create(productName, departmentName, price, stockQuantity) {
+    connection.query(`
+    INSERT INTO products(productName, departmentName, price, stockQuantity) VALUES (?, ?, ?, ?)
+        `, [productName, departmentName, price, stockQuantity], function (err, res) {
+            if (err) throw err;
+            console.log(`New product: ${product} Created!`);
+            // connection.end();
+        })
+}
+
+// create("cupHolder", "accessories", 10.00, 10);
 
 function read(ID) {
     if (ID) {
-        connection.query("SELECT * FROM Products where itemId = ?", [ID], function (err, res) {
+        connection.query("SELECT * FROM Products where ID = ?", [ID], function (err, res) {
             if (err) throw err;
             console.log(res);
         })
@@ -29,81 +40,98 @@ function read(ID) {
         })
     }
 }
-// read();
+read();
 
-function update(ID, productName, departmentName, price, stockQuantity) {
-    connection.query(`UPDATE Products SET
-    productName = ?,
-    departmentName = ?,
-    price = ?,
-    stockQuantity = ?
+function update(ID, stockQuantity) {
+    connection.query(`UPDATE products SET
+    stockQuantity = stockQuantity -?
     WHERE id = ?
-     `, [productName, departmentName, price, stockQuantity, ID], function (err, res) {
+     `, [stockQuantity, ID], function (err, res) {
             if (err) throw err
-            console.log(res);
+            // console.log(res);
         })
 }
 
-// update();
+// update(3, 10);
 
-//INQURIER
+function destroy(id) {
+    connection.query("DELETE FROM products WHERE id = ?", [id], function (err, res) {
+        if (err) throw err;
+        console.log(res);
+    })
+}
+
+
+//INQURIER // ask ta about how this links to mySQL
 
 inquirer
     .prompt([
         {
             name: 'action',
             message: 'What is the product ID that you would like to buy?',
-            type: 'rawlist',
-            choices: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
-
+            type: 'input'
         },
-
-        {
-            name: "action",
-            message: "How many units would you like to purchase?",
-            type: "input"
-        }
-
     ])
 
     .then(answers => {
-        if (answers.action >= 10) {
+        if (answers.action <= 20) {
             inquirer
                 .prompt([
                     {
-                        name: "productName",
-                        message: "Product Name ",
-
-                    },
-                    {
-                        name: "departmentName",
-                        message: "Department Name: ",
-
-                    },
-                    {
-                        name: "price",
-                        message: "Price: ",
-
-                    },
-                    {
-                        name: "stockQuantity",
-                        message: "Qty: "
+                        name: "ID",
+                        message: "Product ID: "
                     }
                 ])
                 .then(function (answers) {
-                    update(answers.productName, answers.departmentName, answers.price, answers.stockQuantity);
 
+                    inquirer
+                        .prompt([
+                            {
+                                name: 'action',
+                                message: 'How many products do you want to order?',
+                                type: 'input',
+
+                            },
+                        ])
+
+                        .then(answers => {
+                            if (answers.action <= 10) {
+                                inquirer
+                                    .prompt([
+                                        {
+                                            name: "ID",
+                                            message: "Product ID: "
+                                        }
+                                    ])
+                                    .then(function (answers) {
+                                        update(answers.ID, answers.stockQuantity);
+                                    })
+
+                            }
+                            else if (answers.action === "Read") {
+                                console.log("Read")
+                            }
+                            else if (answers.action === "Update") {
+                                console.log("Update")
+                            }
+                            else if (answers.action === "Delete") {
+                                console.log("Delete")
+                            }
+
+                        });
                 })
-        }
-
-
-        else if (answers.action === stockQuantity > 0) {
-            console.log("Sorry, OUT OF STOCK!");
 
         }
-
-
+        else if (answers.action === "Read") {
+            console.log("Read")
+        }
+        else if (answers.action === "Create") {
+            console.log("Update")
+        }
+        else if (answers.action === "Delete") {
+            console.log("Delete")
+        }
 
     });
 
-// // read();
+
