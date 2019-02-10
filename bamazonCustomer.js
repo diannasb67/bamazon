@@ -78,49 +78,12 @@ inquirer
             inquirer
                 .prompt([
                     {
-                        name: "ID",
-                        message: "Product ID: "
-                    }
+                        name: 'action',
+                        message: 'How many products do you want to order?',
+                        type: 'input',
+
+                    },
                 ])
-                .then(function (answers) {
-
-                    inquirer
-                        .prompt([
-                            {
-                                name: 'action',
-                                message: 'How many products do you want to order?',
-                                type: 'input',
-
-                            },
-                        ])
-
-                        .then(answers => {
-                            if (answers.action <= 10) {
-                                inquirer
-                                    .prompt([
-                                        {
-                                            name: "ID",
-                                            message: "Product ID: "
-                                        }
-                                    ])
-                                    .then(function (answers) {
-                                        update(answers.ID, answers.stockQuantity);
-                                    })
-
-                            }
-                            else if (answers.action === "Read") {
-                                console.log("Read")
-                            }
-                            else if (answers.action === "Update") {
-                                console.log("Update")
-                            }
-                            else if (answers.action === "Delete") {
-                                console.log("Delete")
-                            }
-
-                        });
-                })
-
         }
         else if (answers.action === "Read") {
             console.log("Read")
