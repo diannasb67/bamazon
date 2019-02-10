@@ -84,6 +84,9 @@ inquirer
 
                     },
                 ])
+                .then(function (answers) {
+                    update(answers.id, answers.quantity);
+                })
         }
         else if (answers.action === "Read") {
             console.log("Read")
